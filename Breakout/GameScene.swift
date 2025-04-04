@@ -67,6 +67,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if contact.bodyA.node?.name == "brick" ||
                 contact.bodyB.node?.name == "brick" {
                 score += 1
+                // increase abll velocity by 2%
+                ball.physicsBody!.velocity.dx *= CGFloat(1.02)
+                ball.physicsBody!.velocity.dy *= CGFloat(1.02)
                 updateLabels()
                 if brick.color == .blue {
                     brick.color = .orange  //blue brick turn orange
@@ -104,7 +107,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     func kickBall() {
         ball.physicsBody?.isDynamic = true
-        ball.physicsBody?.applyImpulse(CGVector(dx: 3, dy: 5))
+        ball.physicsBody?.applyImpulse(CGVector(dx: Int.random(in: -5...5), dy: 5))
     }
     func updateLabels() {
         scoreLabel.text = "Score: \(score)"
@@ -228,6 +231,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 let x = i * 55 + xOffset
                 makeBrick(x: x, y: y, color: colors[r])
             }
+        }
+    }
+    override func update(_ currentTime: TimeInterval) {
+        if abs(ball.physicsBody!.velocity.dx) < 100 {
+            // the ball has stalled in the x direction, so kick it randomly horizontally
+            ball.physicsBody?.applyImpulse(CGVector(dx: Int.random(in: -3...3), dy: 0))
+        }
+        if abs(ball.physicsBody!.velocity.dy) < 100 {
+            // the ball has stalled in the y direction, so kick it randomly vertically
+            ball.physicsBody?.applyImpulse(CGVector(dx: 0, dy: Int.random(in: -3...3)))
         }
     }
 }
